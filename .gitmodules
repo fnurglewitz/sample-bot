@@ -1,3 +1,0 @@
-[submodule "telegram-bot"]
-	path = telegram-bot
-	url = https://github.com/fnurglewitz/telegram-bot
