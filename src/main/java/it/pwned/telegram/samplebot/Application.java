@@ -3,6 +3,11 @@ package it.pwned.telegram.samplebot;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import it.pwned.telegram.samplebot.imgur.ImgurClient;
+import it.pwned.telegram.samplebot.imgur.type.GalleryImage;
+import it.pwned.telegram.samplebot.imgur.type.SubredditSort;
+import it.pwned.telegram.samplebot.imgur.type.SubredditWindow;
+import it.pwned.telegram.samplebot.worker.ImageRefresher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -11,6 +16,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
 
@@ -83,7 +89,15 @@ public class Application {
 			}
 		});
 
-		bot.run();
+		//bot.run();
+
+		RestTemplate rest = ctx.getBean(RestTemplate.class);
+		JdbcTemplate jdbc = ctx.getBean(JdbcTemplate.class);
+
+		ImgurClient imgur = new ImgurClient("fc445ca2acbf676", rest);
+		ImageRefresher refr = new ImageRefresher(imgur,jdbc);
+
+		refr.refreshSubredditImages("aww");
 
 		ctx.close();
 
