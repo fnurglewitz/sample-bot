@@ -18,8 +18,6 @@ public class UserDataHandler implements UpdateHandler, Runnable {
 	private final JdbcTemplate jdbc;
 	private final BlockingQueue<User> userQueue;
 
-	private volatile boolean goOn = true;
-
 	public UserDataHandler(JdbcTemplate jdbc, BlockingQueue<User> userQueue) {
 		this.jdbc = jdbc;
 		this.userQueue = userQueue;
@@ -61,12 +59,12 @@ public class UserDataHandler implements UpdateHandler, Runnable {
 	@Override
 	public void run() {
 
-		while (goOn) {
+		while (!Thread.currentThread().isInterrupted()) {
 
 			try {
 				final User u = userQueue.take();
 
-				int count = 0;
+				int count;
 
 				count = jdbc.update("UPDATE PUBLIC.USER SET FIRST_NAME = ?, LAST_NAME = ?, USERNAME = ? WHERE USER_ID = ? ;",
 						new Object[] { u.firstName, u.lastName, u.username, u.id });
@@ -77,13 +75,8 @@ public class UserDataHandler implements UpdateHandler, Runnable {
 							new Object[] { u.id, u.firstName, u.lastName, u.username });
 				}
 				
-				//log.trace(String.format("", User.Util.usernameOrName(u, UserNameFormat.PLAIN)));
-
-				if (Thread.currentThread().isInterrupted())
-					throw new InterruptedException();
-
 			} catch (InterruptedException e) {
-				goOn = false;
+				Thread.currentThread().interrupt();
 			} catch (DataAccessException de) {
 				log.error("Could not save user data");
 			}

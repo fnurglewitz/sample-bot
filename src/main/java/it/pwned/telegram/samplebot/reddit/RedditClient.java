@@ -7,8 +7,6 @@ import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -17,10 +15,7 @@ public class RedditClient {
 
     private static final Logger log = LoggerFactory.getLogger(RedditClient.class);
 
-    private final RestTemplate rest;
-
-    public RedditClient(RestTemplate rest, JdbcTemplate jdbc) {
-        this.rest = rest;
+    public RedditClient() {
     }
 
     public Optional<SubredditInfo> getSubredditInfo(String subreddit) {
@@ -58,10 +53,14 @@ public class RedditClient {
             statusCode = -1;
         }
 
-        if (statusCode == 200)
+        if (statusCode == 200) {
+            log.trace(String.format("Subreddit [%s] exists.",subreddit));
             return Optional.of(new SubredditInfo(subreddit, url, nsfw));
-        else
+        }
+        else {
+            log.trace(String.format("Subreddit [%s] does NOT exists.",subreddit));
             return Optional.empty();
+        }
 
     }
 

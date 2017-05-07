@@ -20,3 +20,4 @@ database/botdb.mv.db
 .idea/*
 requests.log
 samplebot.log
+database/*

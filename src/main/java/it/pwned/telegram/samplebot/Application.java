@@ -1,25 +1,5 @@
 package it.pwned.telegram.samplebot;
 
-import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import it.pwned.telegram.samplebot.imgur.ImgurClient;
-import it.pwned.telegram.samplebot.imgur.type.GalleryImage;
-import it.pwned.telegram.samplebot.imgur.type.SubredditSort;
-import it.pwned.telegram.samplebot.imgur.type.SubredditWindow;
-import it.pwned.telegram.samplebot.worker.ImageRefresher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.web.client.RestTemplate;
-
 import it.pwned.telegram.bot.TelegramBot;
 import it.pwned.telegram.bot.api.ApiClient;
 import it.pwned.telegram.bot.api.rest.TelegramBotRestApiClient;
@@ -31,8 +11,21 @@ import it.pwned.telegram.bot.handler.UpdateHandler;
 import it.pwned.telegram.bot.handler.UpdateHandlerManager;
 import it.pwned.telegram.samplebot.config.HandlerConfig;
 import it.pwned.telegram.samplebot.config.RestConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.web.client.RestTemplate;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
+
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @SuppressWarnings("restriction")
 @SpringBootApplication
@@ -89,15 +82,7 @@ public class Application {
 			}
 		});
 
-		//bot.run();
-
-		RestTemplate rest = ctx.getBean(RestTemplate.class);
-		JdbcTemplate jdbc = ctx.getBean(JdbcTemplate.class);
-
-		ImgurClient imgur = new ImgurClient("fc445ca2acbf676", rest);
-		ImageRefresher refr = new ImageRefresher(imgur,jdbc);
-
-		refr.refreshSubredditImages("aww");
+		bot.run();
 
 		ctx.close();
 
